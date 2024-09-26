@@ -1,3 +1,7 @@
+from src.analysis.analyzer import timer
+#import random
+
+@timer
 def linear_search(arr, target):
     """
     Perform a linear search for the target in the given array.
@@ -17,3 +21,9 @@ def linear_search(arr, target):
             return index
     # If the target is not found in the array, return -1
     return -1
+
+
+#test code:
+#arr = [random.randint(0, 675) for _ in range(10000)]
+#target = 56
+#linear_search(arr, target)

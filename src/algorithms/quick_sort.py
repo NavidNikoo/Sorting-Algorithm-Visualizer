@@ -1,3 +1,7 @@
+from src.analysis.analyzer import timer
+#import random
+
+@timer
 def quick_sort(arr):
     """
     Sorts the given array in ascending order using the quick sort algorithm.
@@ -26,3 +30,7 @@ def quick_sort(arr):
     # Recursively apply quick_sort to the left and right partitions
     # and concatenate the results with the middle list
     return quick_sort(left) + middle + quick_sort(right)  # Return the combined sorted array
+
+#test code:
+#arr = [random.randint(0, 100) for i in range(100)]
+#quick_sort(arr)

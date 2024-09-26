@@ -1,3 +1,7 @@
+from src.analysis.analyzer import timer
+#import random
+
+@timer
 def bubble_sort(arr):
     """
     Sorts the given array in ascending order using the bubble sort algorithm.
@@ -17,3 +21,8 @@ def bubble_sort(arr):
             if arr[j] > arr[j+1]:
                 arr[j], arr[j+1] = arr[j+1], arr[j]  # Swap the elements
     return arr  # Return the fully sorted array
+
+
+#test code
+#arr = [random.randint(0, 675) for _ in range(10000)]
+#bubble_sort(arr)

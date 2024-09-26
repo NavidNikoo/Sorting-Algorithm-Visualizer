@@ -1,3 +1,7 @@
+from src.analysis.analyzer import timer
+import random
+
+@timer
 def merge_sort(arr):
     """
     Sorts the given array in ascending order using the merge sort algorithm.
@@ -47,3 +51,6 @@ def merge_sort(arr):
             k += 1
 
     return arr  # Return the fully sorted array
+
+arr = [random.randint(0, 100) for i in range(100)]
+merge_sort(arr)

@@ -1,3 +1,7 @@
+from src.analysis.analyzer import timer
+import random
+
+@timer
 def counting_sort(arr, exp):
     """
     A function to perform counting sort on the array based on the digit represented by exp.
@@ -34,6 +38,7 @@ def counting_sort(arr, exp):
 
     return arr  # Return the partially sorted array
 
+@timer
 def radix_sort(arr):
     """
     Sorts the given array in ascending order using the radix sort algorithm.
@@ -54,3 +59,8 @@ def radix_sort(arr):
         exp *= 10  # Move to the next digit place (units to tens to hundreds, etc.)
 
     return arr  # Return the fully sorted array
+
+#arr = [random.randint(0, 100) for i in range(100)]
+#exp = 5
+#radix_sort(arr)
+#counting_sort(arr, exp)
