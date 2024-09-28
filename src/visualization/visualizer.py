@@ -10,7 +10,7 @@ class Window:
     def add_widget(self, widget_id, widget):
         self.widgets[widget_id] = widget
 
-    def get_widget_value(self, widget_id, value):
+    def get_widget_value(self, widget_id):
         return self.widgets[widget_id].get_value()
 
     def set_widget_value(self, widget_id, value):
@@ -24,35 +24,6 @@ class Window:
         for widget in self.widgets.values():
             widget.update(event)
 
-#button class
-class Button():
-    def __init__(self, x, y, image, scale):
-        width = image.get_width()
-        height = image.get_height()
-        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-        self.clicked = False
-
-    def draw(self, surface):
-        action = False
-        # get mouse position
-        pos = pygame.mouse.get_pos()
-
-        # check mouseover and clicked conditions
-        if self.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                self.clicked = True
-                action = True
-
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.clicked = False
-
-        # draw button on screen
-        surface.blit(self.image, (self.rect.x, self.rect.y))
-
-        return action
-
 class Box:
     def __init__(self, rect):
         self.isActive = False
@@ -62,6 +33,28 @@ class Box:
         self.mousePos = pygame.mouse.get_pos()
         self.clicked = event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(self.mousePos)
         self.hovered = self.rect.collidepoint(self.mousePos)
+
+class Button(Box):
+    def __init__(self, rect, inactive_img_path, active_img_path):
+        super().__init__(rect)
+        self.inactive_img = pygame.image.load(inactive_img_path)
+        self.active_img = pygame.image.load(active_img_path)
+        self.active = False
+
+    def render(self, screen):
+        img = self.active_img if self.active else self.inactive_img
+        screen.blit(img, (self.rect.x, self.rect.y))
+
+    def update(self, event):
+        super().update(event)
+        if self.clicked:
+            self.active = not self.active
+
+    def get_value(self):
+        return self.active
+
+    def set_value(self, value):
+        self.active = value
 
 class InputBox(ABC, Box):
     def __init__(self, rect, label, color, font):
@@ -85,7 +78,7 @@ class InputBox(ABC, Box):
 
 class TextBox(InputBox):
     def __init__(self, rect, label, color, font, text):
-        super.__init__(rect, label, color, font)
+        super().__init__(rect, label, color, font)
         self.text = text
 
     def render(self, screen):
