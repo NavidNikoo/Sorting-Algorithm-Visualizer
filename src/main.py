@@ -6,9 +6,10 @@ from AlgorithmDictionary import AlgDict
 
 pygame.init()
 
+#fonts
 font1 = pygame.font.SysFont('Times New Roman', 24)
 
-
+#colors
 BLACK = (0, 0, 0)
 GRAY = (127, 127, 127)
 WHITE = (250, 250, 250)
@@ -23,10 +24,12 @@ MAGENTA = (255, 0, 255)
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 500
 
+#screen and window set up
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Main Menu")
 window = Window(SCREEN)
 
+#Features to GUI
 window.add_widget(
     widget_id='size_input',
     widget=TextBox((30, 440, 100, 50), 'Size', GRAY, font1, '100')
@@ -40,6 +43,7 @@ window.add_widget(
     widget=Button((350, 440, 40, 40), 'assets/playButton.png', 'assets/stopButton.png')
 )
 
+#drawing bars
 def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, greenRows={}):
     '''Draw the bars and control their colors'''
     numBars = len(array)
@@ -60,7 +64,7 @@ def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, greenRows={}):
 
 
 def main():
-    numbers = []
+    numbers = []    #empty array for input
     running = True
     isPlaying = False
     isSorting = False

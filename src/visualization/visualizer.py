@@ -131,7 +131,7 @@ class SlideBox(InputBox):
 
 class DropdownBox(InputBox):
 
-    VISIBLE_OPTIONS = 8
+    VISIBLE_OPTIONS = 5
 
     def __init__(self, rect, label, color, font, options, options_background_color):
         super().__init__(rect, label, color, font)
