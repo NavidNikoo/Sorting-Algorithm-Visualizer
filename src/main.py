@@ -35,7 +35,7 @@ window.add_widget(
     widget=TextBox((30, 440, 100, 50), 'Size', GRAY, font1, '100')
 )
 window.add_widget(
-    widget_id='algorithm_input',
+    widget_id='algorithmInput',
     widget=DropdownBox((140, 440, 200, 50), 'Algorithm', GRAY, font1, list(AlgDict.keys()), WHITE)
 )
 window.add_widget(
@@ -44,22 +44,18 @@ window.add_widget(
 )
 
 #drawing bars
-def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, greenRows={}):
+def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, greenRows = {}):
     '''Draw the bars and control their colors'''
     numBars = len(array)
     if numBars != 0:
-        bar_width = 900 / numBars
+        bar_width  = 900 / numBars
         ceil_width = math.ceil(bar_width)
 
     for num in range(numBars):
-        if num in (redBar1, redBar2):
-            color = RED
-        elif num in (blueBar1, blueBar2):
-            color = BLUE
-        elif num in greenRows:
-            color = GREEN
-        else:
-            color = GRAY
+        if   num in (redBar1, redBar2)  : color = RED
+        elif num in (blueBar1, blueBar2): color = BLUE
+        elif num in greenRows           : color = GREEN
+        else                            : color = GRAY
         pygame.draw.rect(screen, color, (num * bar_width, 400 - array[num], ceil_width, array[num]))
 
 
@@ -85,9 +81,8 @@ def main():
             numbers = [random.randint(10, 400) for i in range(numBars)]
 
             # initialize sorting iterator
-            sortingAlgorithm = window.get_widget_value('algorithm_input')
+            sortingAlgorithm = window.get_widget_value('algorithmInput')
             sortingIterator = AlgDict[sortingAlgorithm](numbers, 0, numBars - 1)
-            isSorting = True
 
         if not isPlaying:
             isSorting = False

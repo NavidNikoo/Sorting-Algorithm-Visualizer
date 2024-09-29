@@ -1,8 +1,8 @@
-from src.analysis.analyzer import timer
+#from src.analysis.analyzer import timer
 #import random
 
-@timer
-def quick_sort(arr):
+#@timer
+def quick_sort(arr, *args):
     """
     Sorts the given array in ascending order using the quick sort algorithm.
 

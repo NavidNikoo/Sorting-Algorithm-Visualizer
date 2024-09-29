@@ -1,5 +1,5 @@
 # Demo program to measure execution time of a Python function
-import time
+'''import time
 
 def timer(func):
     """Function decorator to measure execution time of functions."""
@@ -11,6 +11,6 @@ def timer(func):
         execution_time = end_time - start_time  # Calculate execution time
         print(f'{func.__name__} executed in: {execution_time} seconds')
         return result
-    return wrapper
+    return wrapper'''
 
 # - The timer decorator is used to measure and print the execution time of any function it decorates.

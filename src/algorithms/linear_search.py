@@ -1,8 +1,8 @@
-from src.analysis.analyzer import timer
+#from src.analysis.analyzer import timer
 #import random
 
-@timer
-def linear_search(arr, target):
+#@timer
+def linear_search(arr, target, *args):
     """
     Perform a linear search for the target in the given array.
 
