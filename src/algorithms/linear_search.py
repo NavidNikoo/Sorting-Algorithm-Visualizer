@@ -9,6 +9,9 @@ def linear_search(arr, target, *args):
     Parameters:
     arr (list): The list to search through.
     target: The value to search for.
+    
+    Yields:
+    tuple: The array, the index of the found target, and the current index
 
     Returns:
     int: The index of the target if found, otherwise -1.
@@ -18,9 +21,14 @@ def linear_search(arr, target, *args):
         # Check if the current value matches the target
         if value == target:
             # If a match is found, return the index
-            return index
+            #return index
+            yield arr, index, -1, -1, -1 # Highlight found target
+            return
+        else:
+            yield arr, -1, index, -1, -1 # Highlight current index 
     # If the target is not found in the array, return -1
-    return -1
+    #return -1
+    yield arr, -1, -1, -1, -1 #End the search if no target is found
 
 
 #test code:

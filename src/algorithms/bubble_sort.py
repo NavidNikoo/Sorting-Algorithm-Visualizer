@@ -8,6 +8,9 @@ def bubble_sort(arr, *args):
 
     Parameters:
     arr (list): The list to be sorted.
+    
+    Yields:
+    tuple: Contains the list and index of each bar which are then highlighted to then be swapped
 
     Returns:
     list: The fully sorted list.
@@ -20,7 +23,9 @@ def bubble_sort(arr, *args):
             # If the current element is greater than the next element, swap them
             if arr[j] > arr[j+1]:
                 arr[j], arr[j+1] = arr[j+1], arr[j]  # Swap the elements
-    return arr  # Return the fully sorted array
+                yield arr, j, j+1, -1, -1 # Yield current state of array and index of swapped bars
+    yield arr, -1, -1, -1, -1 # End of yield
+    #return arr  # Return the fully sorted array
 
 
 #test code

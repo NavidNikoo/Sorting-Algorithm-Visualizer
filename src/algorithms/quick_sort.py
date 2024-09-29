@@ -8,12 +8,16 @@ def quick_sort(arr, *args):
 
     Parameters:
     arr (list): The list to be sorted.
+    
+    Yield:
+    tuple: Array and Pivot
 
     Returns:
     list: The sorted list.
     """
     # Base case: if the array has one or no elements, it is already sorted
     if len(arr) <= 1:
+        #yield arr, -1, -1, -1 # Sorted
         return arr
 
     # Choose a pivot element from the array (here we choose the middle element)

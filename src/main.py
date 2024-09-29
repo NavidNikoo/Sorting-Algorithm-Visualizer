@@ -40,7 +40,7 @@ window.add_widget(
 )
 window.add_widget(
     widget_id='playButton',
-    widget=Button((350, 440, 40, 40), 'assets/playButton.png', 'assets/stopButton.png')
+    widget=Button((350, 440, 40, 40), 'src/assets/playButton.png', 'src/assets/stopButton.png')
 )
 
 #drawing bars
@@ -83,6 +83,7 @@ def main():
             # initialize sorting iterator
             sortingAlgorithm = window.get_widget_value('algorithmInput')
             sortingIterator = AlgDict[sortingAlgorithm](numbers, 0, numBars - 1)
+            isSorting = True
 
         if not isPlaying:
             isSorting = False
