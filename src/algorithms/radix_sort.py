@@ -39,7 +39,7 @@ def counting_sort(arr, exp, *args):
     return arr  # Return the partially sorted array
 
 #@timer
-def radix_sort(arr):
+def radix_sort(arr, *args):
     """
     Sorts the given array in ascending order using the radix sort algorithm.
 
