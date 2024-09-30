@@ -2,6 +2,7 @@ import pygame
 import random
 import math
 from visualization import Button, Window, TextBox, DropdownBox
+from src.algorithms.linear_search import linear_search
 from AlgorithmDictionary import AlgDict
 
 pygame.init()
@@ -64,6 +65,7 @@ def main():
     running = True
     isPlaying = False
     isSorting = False
+    isSearching = False
     sortingIterator = None
 
     while running: #game loop
@@ -75,18 +77,41 @@ def main():
             window.update(event)
 
         isPlaying = window.get_widget_value('playButton')
-        if isPlaying and not isSorting:
+        if isPlaying and not (isSorting or isSearching):
             # random list to be sorted
             numBars = int(window.get_widget_value('size_input'))
             numbers = [random.randint(10, 400) for i in range(numBars)]
 
             # initialize sorting iterator
             sortingAlgorithm = window.get_widget_value('algorithmInput')
-            sortingIterator = AlgDict[sortingAlgorithm](numbers, 0, numBars - 1)
-            isSorting = True
+            if sortingAlgorithm == 'linear_search':
+                window.add_widget(
+                    widget_id='target_input',
+                    widget=TextBox((410, 440, 100, 50), 'Target', GRAY, font1, '0')
+                )
+                # Linear search case: use the target value from the input box
+                target = int(window.get_widget_value('target_input'))
+                sortingIterator = linear_search(numbers, target)
+                isSearching = True
+            else:
+                # Other sorting algorithms
+                sortingIterator = AlgDict[sortingAlgorithm](numbers, 0, numBars - 1)
+                isSorting = True
 
         if not isPlaying:
             isSorting = False
+
+        # If linear search is running
+        if isSearching:
+            try:
+                result = next(sortingIterator)
+                numbers, currentIndex = result[:2]  # Only unpack the first two elements if there are extra values
+                # Highlight the current index being compared in blue
+                drawBars(SCREEN, numbers, -1, -1, currentIndex, -1)
+            except StopIteration:
+                isSearching = False
+                window.set_widget_value('playButton', False)
+
 
         if isSorting:
             try:
