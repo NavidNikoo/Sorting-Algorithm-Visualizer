@@ -16,6 +16,9 @@ class Window:
     def set_widget_value(self, widget_id, value):
         return self.widgets[widget_id].set_value(value)
 
+    def remove_widget(self, widget_id):
+        del self.widgets[widget_id]
+
     def render(self):
         for widget in self.widgets.values():
             widget.render(self.screen)

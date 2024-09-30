@@ -85,7 +85,7 @@ def main():
             # initialize sorting iterator
             sortingAlgorithm = window.get_widget_value('algorithmInput')
             if sortingAlgorithm == 'linear_search':
-                window.add_widget(
+                window.add_widget(    # Button appears after linear search
                     widget_id='target_input',
                     widget=TextBox((410, 440, 100, 50), 'Target', GRAY, font1, '0')
                 )
