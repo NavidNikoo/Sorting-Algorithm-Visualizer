@@ -40,7 +40,7 @@ window.add_widget(
 )
 window.add_widget(
     widget_id='playButton',
-    widget=Button((350, 440, 40, 40), 'src/assets/playButton.png', 'src/assets/stopButton.png')
+    widget=Button((350, 440, 40, 40), 'assets/playButton.png', 'assets/stopButton.png')
 )
 
 #drawing bars
