@@ -3,6 +3,7 @@ import random
 import math
 from visualization import Button, Window, TextBox, DropdownBox
 from src.algorithms.linear_search import linear_search
+from src.algorithms.quick_sort import quick_sort
 from AlgorithmDictionary import AlgDict
 
 pygame.init()
@@ -21,7 +22,7 @@ YELLOW = (255, 255, 0)
 CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
 
-#Screen size paramters
+#Screen size parameters
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 500
 
@@ -94,8 +95,11 @@ def main():
                 sortingIterator = linear_search(numbers, target)
                 isSearching = True
             else:
-                # Other sorting algorithms
-                sortingIterator = AlgDict[sortingAlgorithm](numbers, 0, numBars - 1)
+                if sortingAlgorithm == 'quick_sort':
+                    sortingIterator = quick_sort(numbers, 0, numBars - 1)
+                else:
+                    # Other sorting algorithms
+                    sortingIterator = AlgDict[sortingAlgorithm](numbers, 0, numBars - 1)
                 isSorting = True
 
         if not isPlaying:
