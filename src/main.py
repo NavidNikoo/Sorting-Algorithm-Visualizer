@@ -66,7 +66,7 @@ def main():
     isSorting = False
     sortingIterator = None
 
-    while running:
+    while running: #game loop
         SCREEN.fill(WHITE)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
