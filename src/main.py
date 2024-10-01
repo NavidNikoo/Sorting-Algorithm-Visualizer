@@ -44,6 +44,10 @@ window.add_widget(
     widget_id='playButton',
     widget=Button((350, 440, 40, 40), 'assets/playButton.png', 'assets/stopButton.png')
 )
+#window.add_widget(
+#    widget_id='Time',
+#    widget=
+#)
 
 #drawing bars
 def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, greenRows = {}):
