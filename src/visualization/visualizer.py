@@ -20,7 +20,7 @@ class Window:
         del self.widgets[widget_id]
 
     def set_widget_visibility(self, widget_id, visible):
-        """Sets visibility of a widget."""
+        #Sets visibility of a widget
         if widget_id in self.widgets:
             self.widgets[widget_id].visible = visible
 
