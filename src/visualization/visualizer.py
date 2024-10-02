@@ -19,6 +19,11 @@ class Window:
     def remove_widget(self, widget_id):
         del self.widgets[widget_id]
 
+    def set_widget_visibility(self, widget_id, visible):
+        """Sets visibility of a widget."""
+        if widget_id in self.widgets:
+            self.widgets[widget_id].visible = visible
+
     def render(self):
         for widget in self.widgets.values():
             widget.render(self.screen)
@@ -26,6 +31,8 @@ class Window:
     def update(self, event):
         for widget in self.widgets.values():
             widget.update(event)
+
+
 
 class Box:
     def __init__(self, rect):
@@ -58,6 +65,38 @@ class Button(Box):
 
     def set_value(self, value):
         self.active = value
+
+
+class OutputBox(Box):
+    def __init__(self, rect, label, color, font, initial_text=''):
+        super().__init__(rect)
+        self.label = label
+        self.color = color
+        self.font = font
+        self.text = initial_text  # The initial text or output
+
+    def render(self, screen):
+        # Draw the label
+        label_surface = self.font.render(self.label, True, self.color)
+        screen.blit(label_surface, (self.rect.x + (self.rect.w - label_surface.get_width()) / 2, self.rect.y - 32))
+
+        # Draw the text inside the box
+        text_surface = self.font.render(self.text, True, self.color)
+        screen.blit(text_surface, text_surface.get_rect(center=self.rect.center))
+
+        # Draw the box outline
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
+    def update(self, event):
+        # OutputBox doesn't interact with input, so no need to handle input events
+        pass
+
+    def set_value(self, value):
+        self.text = value  # Set the text to display
+
+    def get_value(self):
+        return self.text  # Get the current text in the output box
+
 
 class InputBox(ABC, Box):
     def __init__(self, rect, label, color, font):

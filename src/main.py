@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import time
 from visualization import Button, Window, TextBox, DropdownBox
 from src.algorithms.linear_search import linear_search
 from src.algorithms.quick_sort import quick_sort
@@ -28,7 +29,7 @@ SCREEN_HEIGHT = 500
 
 #screen and window set up
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Main Menu")
+pygame.display.set_caption("Sorting Algorithm Visualizer")
 window = Window(SCREEN)
 
 #Features to GUI
@@ -37,17 +38,22 @@ window.add_widget(
     widget=TextBox((30, 440, 100, 50), 'Size', GRAY, font1, '100')
 )
 window.add_widget(
-    widget_id='algorithmInput',
+    widget_id='algorithm_input',
     widget=DropdownBox((140, 440, 200, 50), 'Algorithm', GRAY, font1, list(AlgDict.keys()), WHITE)
 )
 window.add_widget(
-    widget_id='playButton',
+    widget_id='play_button',
     widget=Button((350, 440, 40, 40), 'assets/playButton.png', 'assets/stopButton.png')
 )
-#window.add_widget(
-#    widget_id='Time',
-#    widget=
-#)
+window.add_widget(
+    widget_id= 'generate_array',
+    widget=Button((400, 440, 125, 50), 'assets/resetButton.png', 'assets/resetButton.png')
+)
+window.add_widget(
+    widget_id='Time',
+    widget=TextBox((520, 440, 150, 50), 'Time', GRAY, font1, '0.0000s')
+)
+
 
 #drawing bars
 def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, greenRows = {}):
@@ -66,7 +72,8 @@ def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, greenRows = {}
 
 
 def main():
-    numbers = []    #empty array for input
+    numbers = []
+    numberReset = False
     running = True
     isPlaying = False
     isSorting = False
@@ -81,24 +88,33 @@ def main():
 
             window.update(event)
 
-        isPlaying = window.get_widget_value('playButton')
+        isPlaying = window.get_widget_value('play_button')
+        numberReset = window.get_widget_value('generate_array')
+
+        if numberReset:
+            numBars = int(window.get_widget_value('size_input'))
+            numbers = [random.randint(10, 400) for i in range(numBars)]
+            window.set_widget_value('generate_array', False)
+
+
         if isPlaying and not (isSorting or isSearching):
-            # random list to be sorted
+            # random list
             numBars = int(window.get_widget_value('size_input'))
             numbers = [random.randint(10, 400) for i in range(numBars)]
 
             # initialize sorting iterator
-            sortingAlgorithm = window.get_widget_value('algorithmInput')
+            sortingAlgorithm = window.get_widget_value('algorithm_input')
             if sortingAlgorithm == 'linear_search':
                 window.add_widget(    # Button appears after linear search
                     widget_id='target_input',
-                    widget=TextBox((410, 440, 100, 50), 'Target', GRAY, font1, '0')
+                    widget=TextBox((750, 440, 100, 50), 'Target', GRAY, font1, '0')
                 )
                 # Linear search case: use the target value from the input box
                 target = int(window.get_widget_value('target_input'))
                 sortingIterator = linear_search(numbers, target)
                 isSearching = True
             else:
+                start_time = time.time()
                 if sortingAlgorithm == 'quick_sort':
                     sortingIterator = quick_sort(numbers, 0, numBars - 1)
                 else:
@@ -109,25 +125,34 @@ def main():
         if not isPlaying:
             isSorting = False
 
-        # If linear search is running
         if isSearching:
             try:
-                result = next(sortingIterator)
-                numbers, currentIndex = result[:2]  # Only unpack the first two elements if there are extra values
-                # Highlight the current index being compared in blue
-                drawBars(SCREEN, numbers, -1, -1, currentIndex, -1)
+                # Fetch the next step of the linear search
+                numbers, currentIndex, foundIndex = next(sortingIterator)
+
+                if foundIndex != -1:
+                    # If the target is found, highlight it in green
+                    drawBars(SCREEN, numbers, -1, -1, foundIndex, -1, greenRows={foundIndex})
+                else:
+                    # Otherwise, highlight the current index in red
+                    drawBars(SCREEN, numbers, currentIndex, -1, -1, -1)
+
             except StopIteration:
                 isSearching = False
-                window.set_widget_value('playButton', False)
-
+                window.set_widget_value('play_button', False)
 
         if isSorting:
             try:
                 numbers, redBar1, redBar2, blueBar1, blueBar2 = next(sortingIterator)
                 drawBars(SCREEN, numbers, redBar1, redBar2, blueBar1, blueBar2)
             except StopIteration:
+                end_time = time.time()
+                elapsed_time = start_time - end_time
+
+                window.set_widget_value('Time', f'{elapsed_time:.4f}s')
+
                 isSorting = False
-                window.set_widget_value('playButton', False)
+                window.set_widget_value('play_button', False)
         else:
             drawBars(SCREEN, numbers, -1, -1, -1, -1, greenRows=set(range(len(numbers))))
 
