@@ -57,7 +57,7 @@ window.add_widget(
 
 #drawing bars
 def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, greenRows = {}):
-    '''Draw the bars and control their colors'''
+    #Draw the bars and control their colors
     numBars = len(array)
     if numBars != 0:
         bar_width  = 900 / numBars
@@ -80,7 +80,8 @@ def main():
     isSearching = False
     sortingIterator = None
 
-    while running: #game loop
+    # game loop
+    while running:
         SCREEN.fill(WHITE)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -91,56 +92,67 @@ def main():
         isPlaying = window.get_widget_value('play_button')
         numberReset = window.get_widget_value('generate_array')
 
+        #reset button
         if numberReset:
             numBars = int(window.get_widget_value('size_input'))
             numbers = [random.randint(10, 400) for i in range(numBars)]
             window.set_widget_value('generate_array', False)
 
 
+        #play button pressed
         if isPlaying and not (isSorting or isSearching):
-            # random list
-            numBars = int(window.get_widget_value('size_input'))
-            numbers = [random.randint(10, 400) for i in range(numBars)]
 
             # initialize sorting iterator
             sortingAlgorithm = window.get_widget_value('algorithm_input')
+            start_time = time.time()
+            if sortingAlgorithm == 'quick_sort':
+                sortingIterator = quick_sort(numbers, 0, numBars - 1)
             if sortingAlgorithm == 'linear_search':
-                window.add_widget(    # Button appears after linear search
-                    widget_id='target_input',
-                    widget=TextBox((750, 440, 100, 50), 'Target', GRAY, font1, '0')
-                )
+                if 'target_input' not in window.widgets:
+                    window.add_widget(  # Button appears after linear search
+                        widget_id='target_input',
+                        widget=TextBox((750, 440, 100, 50), 'Target', GRAY, font1, '0')
+                    )
                 # Linear search case: use the target value from the input box
-                target = int(window.get_widget_value('target_input'))
-                sortingIterator = linear_search(numbers, target)
+                try:
+                    target_value = int(window.get_widget_value('target_input'))
+                except ValueError:
+                    target_value = 0  # Default to 0 if the input is invalid
+
+                sortingIterator = linear_search(numbers, target_value)
                 isSearching = True
             else:
-                start_time = time.time()
-                if sortingAlgorithm == 'quick_sort':
-                    sortingIterator = quick_sort(numbers, 0, numBars - 1)
-                else:
-                    # Other sorting algorithms
-                    sortingIterator = AlgDict[sortingAlgorithm](numbers, 0, numBars - 1)
-                isSorting = True
+                # Other sorting algorithms
+                sortingIterator = AlgDict[sortingAlgorithm](numbers, 0, numBars - 1)
+            isSorting = True
 
+        #play button not pressed
         if not isPlaying:
             isSorting = False
+            isSearching = False
 
+        #searching algorithm
         if isSearching:
             try:
                 # Fetch the next step of the linear search
-                numbers, currentIndex, foundIndex = next(sortingIterator)
+                values = next(sortingIterator)
 
-                if foundIndex != -1:
-                    # If the target is found, highlight it in green
-                    drawBars(SCREEN, numbers, -1, -1, foundIndex, -1, greenRows={foundIndex})
-                else:
-                    # Otherwise, highlight the current index in red
-                    drawBars(SCREEN, numbers, currentIndex, -1, -1, -1)
+                if len(values) == 5:
+                    # Linear search case: 5 values expected
+                    numbers, redBar1, redBar2, blueBar1, blueBar2 = values
+                    drawBars(SCREEN, numbers, redBar1, redBar2, blueBar1, blueBar2)
+
+                    # Stop the search when the target is found
+                    if blueBar1 != -1:
+                        pygame.time.delay(1000)  # Pause for 2 seconds to show the found target
+                        isSearching = False  # Stop searching
+                        window.set_widget_value('play_button', False)
 
             except StopIteration:
                 isSearching = False
                 window.set_widget_value('play_button', False)
 
+        #sorting algorithm
         if isSorting:
             try:
                 numbers, redBar1, redBar2, blueBar1, blueBar2 = next(sortingIterator)

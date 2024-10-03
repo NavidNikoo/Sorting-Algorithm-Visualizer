@@ -1,4 +1,3 @@
-# Demo program to measure execution time of a Python function
 '''import time
 
 def timer(func):
