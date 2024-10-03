@@ -1,23 +1,40 @@
-def linear_search(arr, target, *args):
+def linear_search(arr, target):
     """
-    Perform a linear search for the target in the given array.
+    Perform a linear search on the given array to find the target value.
 
     Parameters:
-    arr (list): The list to search through.
-    target: The value to search for.
+    arr (list): The list in which to search for the target.
+    target: The value to search for in the list.
 
     Yields:
-    tuple: The array, redBar1, redBar2, blueBar1, blueBar2.
+    tuple: The current state of the array and the index being checked.
+           If the target is found, it yields the index of the target.
+           If the target is not found, it yields (-1, -1).
+    """
+    # Iterate through each index in the array
+    for i in range(len(arr)):
+        # Yield the current state of the array and the current index
+        yield arr, i, -1  # Current state: index being checked
+        
+        # Check if the current element matches the target
+        if arr[i] == target:
+            # If found, yield the current state and the index of the found target
+            yield arr, i, i  # Found: return the index of the target
+            return  # Exit the function since the target has been found
+    
+    # If the loop completes without finding the target, yield not found state
+    yield arr, -1, -1  # Not found: return (-1, -1) to indicate target is absent
 
     """
-    for index, value in enumerate(arr):
-        if value == target:
-            # If a match is found, highlight the found target
-            yield arr, index, -1, index, -1  # Found target (index is blueBar1, no redBar2 or blueBar2)
-            return  # Stop the search after finding the target
-        else:
-            # Yield the current index being checked (highlight in red)
-            yield arr, index, -1, -1, -1  # Current index is redBar1, no other bars highlighted
+    Theoretical Complexity of Linear Search Algorithm:
 
-    # If the target is not found, end the search
-    yield arr, -1, -1, -1, -1  # No bars highlighted after search ends
+    1. Time Complexity:
+       - Best Case: O(1) - This occurs when the target element is found at the first index of the array.
+       - Average Case: O(n) - On average, the algorithm will need to check half of the elements in the array to find the target.
+       - Worst Case: O(n) - This occurs when the target element is not present in the array, requiring the algorithm to check all n elements.
+
+    2. Space Complexity:
+       - O(1) - Linear search is an in-place algorithm, meaning it requires a constant amount of additional space regardless of the input size.
+
+    Overall, linear search is simple and effective for small or unsorted datasets, but it becomes inefficient for large datasets compared to more advanced search algorithms like binary search.
+    """

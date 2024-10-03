@@ -1,7 +1,5 @@
-#from src.analysis.analyzer import timer
 import random
 
-#@timer
 def counting_sort(arr, exp, *args):
     """
     A function to perform counting sort on the array based on the digit represented by exp.
@@ -45,7 +43,6 @@ def counting_sort(arr, exp, *args):
     #return arr  # Return the partially sorted array
     yield arr, i, None, None, None # Yield array at current index
 
-#@timer
 def radix_sort(arr, *args):
     """
     Sorts the given array in ascending order using the radix sort algorithm.
@@ -71,7 +68,16 @@ def radix_sort(arr, *args):
     #return arr  # Return the fully sorted array
     yield arr, None, None, None, None # Final yield of sorted array
 
-#arr = [random.randint(0, 100) for i in range(100)]
-#exp = 5
-#radix_sort(arr)
-#counting_sort(arr, exp)
+    """
+    Theoretical Complexity of Radix Sort Algorithm:
+
+    1. Time Complexity:
+       - Best Case: O(nk) - The best case occurs when the input array is uniformly distributed across the range of digits. The algorithm will still need to process each digit of each number, leading to a linear relationship with respect to the number of elements (n) and the number of digits (k).
+       - Average Case: O(nk) - On average, the time complexity remains O(nk) as the algorithm processes each digit of each number, regardless of the distribution of the input.
+       - Worst Case: O(nk) - The worst case also results in O(nk) time complexity, as the algorithm must still process all digits of all numbers in the array.
+
+    2. Space Complexity:
+       - O(n + k) - The space complexity is determined by the output array and the count array used for counting occurrences of each digit. The output array requires O(n) space, while the count array requires O(k) space, where k is the range of the digit values (0-9 for decimal numbers).
+
+    Overall, radix sort is efficient for sorting large datasets of integers or strings, especially when the number of digits (k) is significantly smaller than the number of elements (n). Its linear time complexity makes it suitable for specific applications where the input size is large and the range of values is limited.
+    """
