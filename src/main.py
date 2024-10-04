@@ -52,15 +52,15 @@ window.add_widget(
     widget_id='renew_button',
     widget=Button((530, 440, 80, 40), 'Renew', LIGHT_GRAY, DARK_GRAY)  # Button to generate a new random array
 )
-window.add_widget(
-    widget_id='linear_search_option',
-    widget=RadioButton((620, 440, 150, 50), 'Search for', GRAY, font1, ['Max', 'Min'])  # Radio button for search options
-)
+
+# Create the RadioButton for search options
+search_option_radio = RadioButton((620, 440, 150, 50), 'Search for', GRAY, font1, ['Max', 'Min'])
+search_option_radio.set_value('Max')  # Set default value to 'Max'
+window.add_widget(widget_id='linear_search_option', widget=search_option_radio)
 
 # Create the AlgorithmSelectionPopup with available algorithms
 algorithm_popup = AlgorithmSelectionPopup(SCREEN, list(AlgDict.keys()))  # Initialize the algorithm selection popup
 
-# Function to calculate layout based on the number of algorithms
 def calculate_layout(num_algorithms):
     """Calculate the layout for displaying algorithm bars based on the number of algorithms."""
     if num_algorithms == 1:
@@ -83,7 +83,6 @@ def calculate_layout(num_algorithms):
                 (0, height, width, height),
                 (width, height, width, height)]
 
-# Function to draw bars representing the sorting algorithms
 def drawBars(screen, array, redBar1, redBar2, blueBar1, blueBar2, rect, algorithm_name):
     """Draw bars on the screen representing the current state of the sorting algorithm."""
     x, y, width, height = rect  # Unpack rectangle dimensions
@@ -126,6 +125,10 @@ def reset_array(window, original_numbers):
 
     window.widgets['play_pause_button'].text = 'Play'  # Reset play/pause button text
     return numbers, sortingIterators, isSorting, isSearching, start_times, end_times, finished_algorithms, algorithm_states, pause_durations  # Return reset values
+
+# Add these constants at the top of your file
+VISUALIZATION_SPEED = 60  # Number of steps per second
+STEP_DELAY = 1 / VISUALIZATION_SPEED  # Calculate delay between steps
 
 def main():
     """Main function to run the sorting algorithm visualizer."""
@@ -183,6 +186,7 @@ def main():
                             else:
                                 continue  # Skip if no option is selected
                             sortingIterators[algorithm] = linear_search(numbers.copy(), target)  # Start linear search
+                            start_times[algorithm] = time.time()  # Set start time for linear search
                             isSearching = True  # Set searching flag
                         else:
                             sortingIterators[algorithm] = AlgDict[algorithm](numbers.copy(), 0, len(numbers) - 1)  # Start sorting algorithm
@@ -239,60 +243,69 @@ def main():
             numbers, sortingIterators, isSorting, isSearching, start_times, end_times, finished_algorithms, algorithm_states, pause_durations = reset_array(window, original_numbers)  # Reset the array
             window.set_widget_value('renew_button', False)  # Reset button state
 
-        if isSorting and not isPaused:  # If sorting is in progress and not paused
+        if isSorting and not isPaused:
             selectedAlgorithms = algorithm_popup.get_selected_algorithms()  # Get selected algorithms
-            layout = calculate_layout(len(selectedAlgorithms))  # Calculate layout for the selected algorithms
+            layout = calculate_layout(len(selectedAlgorithms))  # Calculate layout based on selected algorithms
 
             for i, algorithm in enumerate(selectedAlgorithms):  # Iterate through selected algorithms
-                if i < len(layout) and algorithm in sortingIterators and algorithm not in finished_algorithms:  # Check if algorithm is still running
+                if i < len(layout) and algorithm in sortingIterators and algorithm not in finished_algorithms:
                     try:
-                        numbers, redBar1, redBar2, blueBar1, blueBar2 = next(sortingIterators[algorithm])  # Get next state of the algorithm
-                        algorithm_states[algorithm] = (numbers, redBar1, redBar2, blueBar1, blueBar2)  # Update algorithm state
-                    except StopIteration:  # If the algorithm has finished
-                        finished_algorithms.add(algorithm)  # Add to finished algorithms
-                        end_times[algorithm] = time.time()  # Record end time when algorithm finishes
+                        if algorithm == 'linear_search':
+                            # Handle linear search separately
+                            result = next(sortingIterators[algorithm])  # Get the next result from the linear search iterator
+                            if len(result) == 3:  # Linear search returns (array, current_index, found)
+                                numbers, current_index, found = result
+                                redBar1, redBar2 = current_index, -1  # Set highlighted bars for linear search
+                                blueBar1, blueBar2 = (-1, -1) if not found else (current_index, -1)  # Set secondary highlighted bars
+                            else:
+                                numbers, redBar1, redBar2, blueBar1, blueBar2 = result  # Unpack result for other algorithms
+                        else:
+                            # Handle other algorithms
+                            numbers, redBar1, redBar2, blueBar1, blueBar2 = next(sortingIterators[algorithm])  # Get the next result
+                        
+                        algorithm_states[algorithm] = (numbers, redBar1, redBar2, blueBar1, blueBar2)  # Update algorithm states
+                    except StopIteration:
+                        finished_algorithms.add(algorithm)  # Mark algorithm as finished
+                        end_times[algorithm] = time.time()  # Record end time
 
-                if algorithm in algorithm_states:  # If the algorithm has a recorded state
-                    numbers, redBar1, redBar2, blueBar1, blueBar2 = algorithm_states[algorithm]  # Get the current state
-                    drawBars(SCREEN, numbers, redBar1, redBar2, blueBar1, blueBar2, layout[i], algorithm)  # Draw the bars
+                if algorithm in algorithm_states:  # If algorithm state exists
+                    numbers, redBar1, redBar2, blueBar1, blueBar2 = algorithm_states[algorithm]  # Unpack algorithm state
+                    drawBars(SCREEN, numbers, redBar1, redBar2, blueBar1, blueBar2, layout[i], algorithm)  # Draw bars for the algorithm
                     
-                    # Update and display time
-                    if algorithm in start_times:  # If the algorithm has a start time
-                        if algorithm in end_times:  # If the algorithm has finished
+                    # Update and display time for all algorithms, including linear search
+                    if algorithm in start_times:  # If start time exists
+                        if algorithm in end_times:  # If end time exists
                             elapsed_time = end_times[algorithm] - start_times[algorithm] - pause_durations.get(algorithm, 0)  # Calculate elapsed time
-                        else:  # If still running
+                        else:
                             elapsed_time = time.time() - start_times[algorithm] - pause_durations.get(algorithm, 0)  # Calculate elapsed time
                         time_surface = time_font.render(f'Time: {elapsed_time:.4f}s', True, BLACK)  # Render elapsed time
-                        x, y, width, _ = layout[i]  # Get layout dimensions
-                        SCREEN.blit(time_surface, (x + width - 100, y + 5))  # Draw time on the screen
+                        x, y, width, _ = layout[i]  # Unpack layout dimensions
+                        SCREEN.blit(time_surface, (x + width - 100, y + 5))  # Draw elapsed time on the screen
 
-            if len(finished_algorithms) == len(selectedAlgorithms):  # If all algorithms have finished
-                isSorting = False  # Reset sorting flag
-                window.widgets['play_pause_button'].text = 'Play'  # Change button text to 'Play'
         else:
             # Draw current state of algorithms (sorted, partially sorted, or unsorted)
             selectedAlgorithms = algorithm_popup.get_selected_algorithms()  # Get selected algorithms
-            layout = calculate_layout(len(selectedAlgorithms))  # Calculate layout for the selected algorithms
+            layout = calculate_layout(len(selectedAlgorithms))  # Calculate layout based on selected algorithms
             for i, algorithm in enumerate(selectedAlgorithms):  # Iterate through selected algorithms
                 if i < len(layout):  # Check if within layout bounds
-                    if algorithm in algorithm_states:  # If the algorithm has a recorded state
-                        numbers, redBar1, redBar2, blueBar1, blueBar2 = algorithm_states[algorithm]  # Get the current state
-                    else:  # If no state recorded
-                        numbers, redBar1, redBar2, blueBar1, blueBar2 = numbers, -1, -1, -1, -1  # Default values
-                    drawBars(SCREEN, numbers, redBar1, redBar2, blueBar1, blueBar2, layout[i], algorithm)  # Draw the bars
+                    if algorithm in algorithm_states:  # If algorithm state exists
+                        numbers, redBar1, redBar2, blueBar1, blueBar2 = algorithm_states[algorithm]  # Unpack algorithm state
+                    else:
+                        numbers, redBar1, redBar2, blueBar1, blueBar2 = numbers, -1, -1, -1, -1  # Default values if no state
+                    drawBars(SCREEN, numbers, redBar1, redBar2, blueBar1, blueBar2, layout[i], algorithm)  # Draw bars for the algorithm
                     
                     # Display time if available
-                    if algorithm in start_times:  # If the algorithm has a start time
-                        if algorithm in end_times:  # If the algorithm has finished
+                    if algorithm in start_times:  # If start time exists
+                        if algorithm in end_times:  # If end time exists
                             elapsed_time = end_times[algorithm] - start_times[algorithm] - pause_durations.get(algorithm, 0)  # Calculate elapsed time
-                        else:  # If still running
+                        else:
                             if isPaused:  # If paused
-                                elapsed_time = pause_start_time - start_times[algorithm] - pause_durations.get(algorithm, 0)  # Calculate elapsed time
-                            else:  # If not paused
+                                elapsed_time = pause_start_time - start_times[algorithm] - pause_durations.get(algorithm, 0)  # Calculate elapsed time during pause
+                            else:
                                 elapsed_time = time.time() - start_times[algorithm] - pause_durations.get(algorithm, 0)  # Calculate elapsed time
                         time_surface = time_font.render(f'Time: {elapsed_time:.4f}s', True, BLACK)  # Render elapsed time
-                        x, y, width, _ = layout[i]  # Get layout dimensions
-                        SCREEN.blit(time_surface, (x + width - 100, y + 5))  # Draw time on the screen
+                        x, y, width, _ = layout[i]  # Unpack layout dimensions
+                        SCREEN.blit(time_surface, (x + width - 100, y + 5))  # Draw elapsed time on the screen
 
         window.render()  # Render the window
         algorithm_popup.render()  # Render the algorithm selection popup

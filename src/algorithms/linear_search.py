@@ -14,16 +14,16 @@ def linear_search(arr, target):
     # Iterate through each index in the array
     for i in range(len(arr)):
         # Yield the current state of the array and the current index
-        yield arr, i, -1  # Current state: index being checked
+        yield arr, i, arr[i] == target  # Current state: index being checked and found status
         
         # Check if the current element matches the target
         if arr[i] == target:
             # If found, yield the current state and the index of the found target
-            yield arr, i, i  # Found: return the index of the target
+            yield arr, i, True  # Found: return True to indicate target is present
             return  # Exit the function since the target has been found
     
     # If the loop completes without finding the target, yield not found state
-    yield arr, -1, -1  # Not found: return (-1, -1) to indicate target is absent
+    yield arr, -1, False  # Not found: return False to indicate target is absent
 
     """
     Theoretical Complexity of Linear Search Algorithm:
